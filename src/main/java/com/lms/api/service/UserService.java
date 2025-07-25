@@ -1,22 +1,28 @@
 package com.lms.api.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.lms.api.dto.UserDto;
+import com.lms.api.model.Role;
 import com.lms.api.model.User;
+import com.lms.api.repository.RoleRepository;
 import com.lms.api.repository.UserRepository;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     public Optional<UserDto> getUserById(Long id) {
@@ -35,7 +41,15 @@ public class UserService {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Email already exists: " + dto.getEmail());
         }
+
         User user = new User(dto.getName(), dto.getEmail());
+        user.setPassword(dto.getPassword());
+        
+        Role defaultRole = roleRepository.findByName("ROLE_USER")
+        .orElseThrow(() -> new NoSuchElementException("Role not found: ROLE_USER"));
+        
+        user.setRoles(Set.of(defaultRole));
+        
         User savedUser = userRepository.save(user);
         return new UserDto(savedUser.getName(), savedUser.getEmail());
     }
