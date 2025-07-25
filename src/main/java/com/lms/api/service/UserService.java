@@ -32,12 +32,18 @@ public class UserService {
     }
 
     public UserDto createUser(UserDto dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("Email already exists: " + dto.getEmail());
+        }
         User user = new User(dto.getName(), dto.getEmail());
         User savedUser = userRepository.save(user);
         return new UserDto(savedUser.getName(), savedUser.getEmail());
     }
 
     public UserDto updateUser(Long id, UserDto dto) {
+        if (userRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
+            throw new IllegalArgumentException("Email already exists: " + dto.getEmail());
+        }
         User user = userRepository.findById(id)
                     .orElseThrow(() -> new NoSuchElementException("User with id " + id + " not found"));
         user.setName(dto.getName());
