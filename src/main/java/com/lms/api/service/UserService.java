@@ -1,6 +1,5 @@
 package com.lms.api.service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -67,6 +66,7 @@ public class UserService {
                     .orElseThrow(() -> new NoSuchElementException("User with id " + id + " not found"));
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         User updatedUser = userRepository.save(user);
         return new UserDto(updatedUser.getName(), updatedUser.getEmail());
