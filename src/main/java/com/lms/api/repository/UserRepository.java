@@ -1,5 +1,7 @@
 package com.lms.api.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.lms.api.model.User;
@@ -11,4 +13,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmailAndIdNot(String email, Long id);
     
+    Optional<User> findByEmail(String email);
 }

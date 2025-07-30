@@ -1,12 +1,12 @@
-package com.lms.api.model;
+package com.lms.api.dto;
 
-public class authResponse {
+public class LoginResponse {
     private String token;
     private String message;
 
-    public authResponse() {}
+    public LoginResponse() {}
 
-    public authResponse(String token, String message) {
+    public LoginResponse(String token, String message) {
         this.token = token;
         this.message = message;
     }

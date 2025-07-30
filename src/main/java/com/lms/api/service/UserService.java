@@ -6,6 +6,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.lms.api.dto.UserDto;
@@ -37,13 +39,16 @@ public class UserService {
                 .toList();
     }
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UserDto createUser(UserDto dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Email already exists: " + dto.getEmail());
         }
 
         User user = new User(dto.getName(), dto.getEmail());
-        user.setPassword(dto.getPassword());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         
         Role defaultRole = roleRepository.findByName("ROLE_USER")
         .orElseThrow(() -> new NoSuchElementException("Role not found: ROLE_USER"));
