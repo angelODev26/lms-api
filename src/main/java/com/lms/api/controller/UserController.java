@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lms.api.dto.UserDto;
+import com.lms.api.dto.UserRequestDto;
+import com.lms.api.dto.UserResponseDto;
 import com.lms.api.payload.ApiResponse;
 import com.lms.api.service.UserService;
 
@@ -30,35 +31,35 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserDto>>> getAllUsers() {
-        List<UserDto> users = userService.getAllUsers();
-        ApiResponse<List<UserDto>> response = new ApiResponse<>(true, "Users retrieved successfully", users);
+    public ResponseEntity<ApiResponse<List<UserResponseDto>>> getAllUsers() {
+        List<UserResponseDto> users = userService.getAllUsers();
+        ApiResponse<List<UserResponseDto>> response = new ApiResponse<>(true, "Users retrieved successfully", users);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable Long id) {
-        Optional<UserDto> userDto = userService.getUserById(id);
+    public ResponseEntity<ApiResponse<UserResponseDto>> getUserById(@PathVariable Long id) {
+        Optional<UserResponseDto> userDto = userService.getUserById(id);
 
         if (userDto.isPresent()) {
-            ApiResponse<UserDto> response = new ApiResponse<>(true, "User found", userDto.get());
+            ApiResponse<UserResponseDto> response = new ApiResponse<>(true, "User found", userDto.get());
             return ResponseEntity.ok(response);
         } else {
-            ApiResponse<UserDto> response = new ApiResponse<>(false, "User whith id " + id + " not found", null);
+            ApiResponse<UserResponseDto> response = new ApiResponse<>(false, "User whith id " + id + " not found", null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
-        UserDto createdUser = userService.createUser(userDto);
+    public ResponseEntity<UserRequestDto> createUser(@Valid @RequestBody UserRequestDto userDto) {
+        UserRequestDto createdUser = userService.createUser(userDto);
         return ResponseEntity.ok(createdUser);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDto>> updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
-        UserDto updatedUser = userService.updateUser(id, userDto);
-        ApiResponse<UserDto> response = new ApiResponse<>(true, "User updated successfully", updatedUser);
+    public ResponseEntity<ApiResponse<UserRequestDto>> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDto userDto) {
+        UserRequestDto updatedUser = userService.updateUser(id, userDto);
+        ApiResponse<UserRequestDto> response = new ApiResponse<>(true, "User updated successfully", updatedUser);
         return ResponseEntity.ok(response);
         
     }

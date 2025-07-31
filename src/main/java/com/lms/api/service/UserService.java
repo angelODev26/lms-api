@@ -1,5 +1,6 @@
 package com.lms.api.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -9,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.lms.api.dto.UserDto;
+import com.lms.api.dto.UserResponseDto;
+import com.lms.api.dto.UserRequestDto;
 import com.lms.api.model.Role;
 import com.lms.api.model.User;
 import com.lms.api.repository.RoleRepository;
@@ -26,50 +28,74 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-    public Optional<UserDto> getUserById(Long id) {
+    public Optional<UserResponseDto> getUserById(Long id) {
         return userRepository.findById(id)
-                .map(user -> new UserDto(user.getName(), user.getEmail()));
+                .map(user -> new UserResponseDto(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getRoles().stream().map(Role::getName).toList()));
     }
 
-    public List<UserDto> getAllUsers() {
+    public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(user -> new UserDto(user.getName(), user.getEmail()))
+                .map(user -> new UserResponseDto(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getRoles().stream().map(Role::getName).toList()))
                 .toList();
     }
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserDto createUser(UserDto dto) {
+    public UserRequestDto createUser(UserRequestDto dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Email already exists: " + dto.getEmail());
         }
 
         User user = new User(dto.getName(), dto.getEmail());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        
-        Role defaultRole = roleRepository.findByName("ROLE_USER")
-        .orElseThrow(() -> new NoSuchElementException("Role not found: ROLE_USER"));
-        
-        user.setRoles(Set.of(defaultRole));
-        
+
+        String roleName = dto.getRole();
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new NoSuchElementException("Role not found: " + roleName));
+
+        user.setRoles(Set.of(role));
+
         User savedUser = userRepository.save(user);
-        return new UserDto(savedUser.getName(), savedUser.getEmail());
+        return new UserRequestDto(savedUser.getName(), savedUser.getEmail(), "", roleName, "");
     }
 
-    public UserDto updateUser(Long id, UserDto dto) {
+    public UserRequestDto updateUser(Long id, UserRequestDto dto) {
         if (userRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
             throw new IllegalArgumentException("Email already exists: " + dto.getEmail());
         }
         User user = userRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("User with id " + id + " not found"));
+                .orElseThrow(() -> new NoSuchElementException("User with id " + id + " not found"));
+
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Password does not match for user " + user.getEmail());
+        }
+
+        String roleName = dto.getRole();
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new NoSuchElementException("Role not found: " + roleName));
+        
+        user.setRoles(new HashSet<>(List.of(role)));
+
+        if (dto.getNewPassword() != null && !dto.getNewPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        }
+
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         User updatedUser = userRepository.save(user);
-        return new UserDto(updatedUser.getName(), updatedUser.getEmail());
+        return new UserRequestDto(updatedUser.getName(), updatedUser.getEmail(), "",
+                roleName, "");
     }
 
     public void deleteUser(Long id) {

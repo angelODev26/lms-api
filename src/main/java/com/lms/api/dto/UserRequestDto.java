@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class UserDto {
+public class UserRequestDto {
 
     @NotBlank(message = "Name cannot be blank")
     @Size(min = 3, max = 50, message = "Name cannot exceed 100 characters")
@@ -18,11 +18,19 @@ public class UserDto {
     @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters")
     private String password;
 
-    public UserDto() {}
+    @NotBlank(message = "Role cannot be blank")
+    private String role;
 
-    public UserDto(String name, String email) {
+    private String newPassword;
+
+    public UserRequestDto() {}
+
+    public UserRequestDto(String name, String email, String password, String role, String newPassword) {
         this.name = name;
         this.email = email;
+        this.password = password;
+        this.role = role;
+        this.newPassword = newPassword;
     }
 
     public String getName() {
@@ -47,6 +55,22 @@ public class UserDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
     }
     
 }
