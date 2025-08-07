@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +51,7 @@ public class CourseController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @PostMapping
     public ResponseEntity<ApiResponse<CourseDto>> createCourse(@Valid @RequestBody CourseDto courseDto) {
         CourseDto createdCourse = courseService.createCourse(courseDto);
@@ -57,6 +59,7 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<CourseDto>> updateCourse(@PathVariable Long id, @Valid @RequestBody CourseDto courseDto) {
         CourseDto updatedCourse = courseService.updateCourse(id, courseDto);
@@ -64,6 +67,7 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
