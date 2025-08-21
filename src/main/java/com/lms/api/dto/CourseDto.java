@@ -1,5 +1,6 @@
 package com.lms.api.dto;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,12 +22,12 @@ public class CourseDto {
     private Long id;
     private String createdByName;
     private String updatedByName;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     public CourseDto() {}
 
-    public CourseDto(Long id, String title, String description, User createdBy, User updatedBy, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public CourseDto(Long id, String title, String description, User createdBy, User updatedBy, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -65,19 +66,19 @@ public class CourseDto {
         this.id = id;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 
