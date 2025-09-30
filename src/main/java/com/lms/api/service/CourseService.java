@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.lms.api.dto.CourseDto;
 import com.lms.api.model.Course;
-import com.lms.api.model.User;
 import com.lms.api.repository.CourseRepository;
 import com.lms.api.repository.UserRepository;
-import com.lms.api.util.AuthUtil;
 
 @Service
 public class CourseService {
@@ -27,13 +25,13 @@ public class CourseService {
     public List<CourseDto> getAllCourses() {
         return courseRepository.findAll()
                 .stream()
-                .map(course -> new CourseDto(course.getId(), course.getTitle(), course.getDescription(), course.getCreatedBy(), course.getUpdatedBy(), course.getCreatedAt(), course.getUpdatedAt()))
+                .map(course -> new CourseDto(course.getId(), course.getTitle(), course.getDescription()))
                 .toList();
     }
 
     public Optional<CourseDto> getCourseById(Long id) {
         return courseRepository.findById(id)
-                .map(course -> new CourseDto(course.getId(), course.getTitle(), course.getDescription(), course.getCreatedBy(), course.getUpdatedBy(), course.getCreatedAt(), course.getUpdatedAt()));
+                .map(course -> new CourseDto(course.getId(), course.getTitle(), course.getDescription()));
     }
 
     public CourseDto createCourse(CourseDto courseDto) {
@@ -44,13 +42,6 @@ public class CourseService {
         Course course = new Course();
         course.setTitle(courseDto.getTitle());
         course.setDescription(courseDto.getDescription());
-
-        String email = AuthUtil.getCurrentUser();
-        User currentUser = userRepository.findByEmail(email)
-                            .orElseThrow(() -> new NoSuchElementException("Current user not found: " + email));
-
-        course.setCreatedBy(currentUser); // Assuming createdBy is set elsewhere
-        course.setUpdatedBy(currentUser); // Assuming updatedBy is set elsewhere
 
         Course savedCourse = courseRepository.save(course);
         return new CourseDto(savedCourse.getTitle(), savedCourse.getDescription());
@@ -64,13 +55,8 @@ public class CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Course not found with id: " + id));
 
-        String email = AuthUtil.getCurrentUser();
-        User currentUser = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new NoSuchElementException("Current user not found: " + email));
-
         course.setTitle(courseDto.getTitle());
         course.setDescription(courseDto.getDescription());
-        course.setUpdatedBy(currentUser);
 
         Course updatedCourse = courseRepository.save(course);
         return new CourseDto(updatedCourse.getTitle(), updatedCourse.getDescription());

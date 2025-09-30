@@ -20,21 +20,13 @@ public class CourseDto {
     private String description;
 
     private Long id;
-    private String createdByName;
-    private String updatedByName;
-    private Instant createdAt;
-    private Instant updatedAt;
 
     public CourseDto() {}
 
-    public CourseDto(Long id, String title, String description, User createdBy, User updatedBy, Instant createdAt, Instant updatedAt) {
+    public CourseDto(Long id, String title, String description) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.createdByName = createdBy != null ? createdBy.getName() : null;
-        this.updatedByName = updatedBy != null ? updatedBy.getName() : null;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public CourseDto(String title, String description) {
@@ -66,35 +58,5 @@ public class CourseDto {
         this.id = id;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getCreatedByName() {
-        return createdByName;
-    }
-
-    public void setCreatedByName(String createdByName) {
-        this.createdByName = createdByName;
-    }
-
-    public String getUpdatedByName() {
-        return updatedByName;
-    }
-
-    public void setUpdatedByName(String updatedByName) {
-        this.updatedByName = updatedByName;
-    }
 }
